@@ -61,16 +61,37 @@ class Solution:
                     machine = self.Machine()
 
 
+    def calc_b(self, a, machine):
+        x = (a * machine.ax)
+        remx = machine.px - x
+        if remx % machine.bx == 0:
+            b = int(remx / machine.bx)
+            y = (a * machine.ay) + (b * machine.by)
+            if y == machine.py:
+                return b
+        return -1
+
+
     def cheapest_pushes(self, machine: Machine) -> int:
         min_cost = -1
-        for a in range(101):
-            for b in range(101):
+        a = 0
+        b = 0
+        while True:
+            if a % 100000 == 0:
+                print(f"a is {a} at {a * machine.ax} of {machine.px}")
+            a += 1
+            b = self.calc_b(a, machine)
+            if b != -1:
                 x = (a * machine.ax) + (b * machine.bx)
                 y = (a * machine.ay) + (b * machine.by)
                 if x == machine.px and y == machine.py:
+                    print(f"found cost of {cost} for {a} and {b}")
                     cost = a*3 + b
                     if min_cost == -1 or cost < min_cost:
                         min_cost = cost
+            if (a * machine.ax) > machine.px or (a * machine.ay) > machine.py:
+                print("out of bounds")
+                break
         return min_cost
 
 
