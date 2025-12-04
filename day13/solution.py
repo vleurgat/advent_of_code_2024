@@ -61,46 +61,28 @@ class Solution:
                     machine = self.Machine()
 
 
-    def calc_b(self, a, machine):
-        x = (a * machine.ax)
-        remx = machine.px - x
-        if remx % machine.bx == 0:
-            b = int(remx / machine.bx)
-            y = (a * machine.ay) + (b * machine.by)
-            if y == machine.py:
-                return b
-        return -1
-
-
-    def cheapest_pushes(self, machine: Machine) -> int:
-        min_cost = -1
-        a = 0
-        b = 0
-        while True:
-            if a % 100000 == 0:
-                print(f"a is {a} at {a * machine.ax} of {machine.px}")
-            a += 1
-            b = self.calc_b(a, machine)
-            if b != -1:
-                x = (a * machine.ax) + (b * machine.bx)
-                y = (a * machine.ay) + (b * machine.by)
-                if x == machine.px and y == machine.py:
-                    print(f"found cost of {cost} for {a} and {b}")
-                    cost = a*3 + b
-                    if min_cost == -1 or cost < min_cost:
-                        min_cost = cost
-            if (a * machine.ax) > machine.px or (a * machine.ay) > machine.py:
-                print("out of bounds")
-                break
-        return min_cost
+    def cheapest(self, machine: Machine) -> int:
+        a = ((machine.px * machine.by) - (machine.py * machine.bx)) / ((machine.ax * machine.by) - (machine.bx * machine.ay))
+        int_a = int(a)
+        #print(f"for machine {machine}: got a={a} and int_a={int_a}")
+        if a != int_a:
+            #print(f"int_a != a -- returning -1")
+            return -1
+        b = (machine.px - (int_a * machine.ax)) / machine.bx
+        int_b = int(b)
+        #print(f"for machine {machine}: got b={b} and int_b={int_b}")
+        if b != int_b:
+            #print(f"int_b != b -- returning -1")
+            return -1
+        return (int_a * 3) + int_b
 
 
     def solve(self, filename):
         self.read_file(filename)
         total = 0
         for machine in self.machines:
-            print(f"machine is {machine}")
-            min_cost = self.cheapest_pushes(machine)
+            #print(f"machine is {machine}")
+            min_cost = self.cheapest(machine)
             if min_cost != -1:
                 total += min_cost
         print(f"total min cost is {total}")
@@ -108,4 +90,4 @@ class Solution:
 
 if __name__ == "__main__":
     solution = Solution()
-    solution.solve('test.txt')
+    solution.solve('input.txt')
