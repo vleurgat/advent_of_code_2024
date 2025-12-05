@@ -54,6 +54,8 @@ class Solution:
         self.end_y = 0
         self.min_cost = -1
         self.cost_per_point = {}
+        self.min_points = []
+        self.pre_calc_max = -1
 
 
     def read_file(self, filename):
@@ -113,7 +115,12 @@ class Solution:
                 print(f"got complete {r}")
                 if self.min_cost == -1 or r.cost < self.min_cost:
                     self.min_cost = r.cost
-            elif (self.min_cost == -1 or r.cost < self.min_cost) and r.cost < self.point_cost(r):
+                    self.min_points = r.visited.copy()
+                elif r.cost == self.min_cost:
+                    for p in r.visited:
+                        if not p in self.min_points:
+                            self.min_points.append(p)
+            elif (self.min_cost == -1 or r.cost < self.min_cost) and r.cost <= self.point_cost(r) and (r.cost <= self.pre_calc_max or self.pre_calc_max == -1):
                 self.set_point_cost(r)
                 context.extend(self.next_moves(r))
 
@@ -148,8 +155,10 @@ class Solution:
         r.y = self.start_y
         self.walk(r)
         print(f"min cost is {self.min_cost}")
+        print(f"number of min cost tiles: {len(self.min_points) + 1}")
 
 
 if __name__ == "__main__":
     solution = Solution()
+    solution.pre_calc_max = 65436
     solution.solve('input.txt')
